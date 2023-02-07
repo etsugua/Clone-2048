@@ -1,15 +1,30 @@
-﻿using UnityEngine;
+﻿using TMPro;
+using UnityEngine;
 
 namespace Specific.Gameplay
 {
-    public class Tile {
-        public int Number; // the number on the tile
-        public Vector2 Position; // the position of the tile on the game board
-
-        // constructor
-        public Tile(int number, Vector2 position) {
-            Number = number;
-            Position = position;
+    public class Tile : MonoBehaviour
+    {
+        private int _value; // the number of the tile
+        private TextMeshPro _text; // the text of the tile
+        private Material _material; // the material of the tile
+        
+        public int Value
+        {
+            get => _value;
+            set
+            {
+                Debug.Log($"Setting Value: {value.ToString()}");
+                _value = value;
+                _text.text = _value.ToString();
+                _material.color = TileColors.GetColor(_value);
+            }
+        }
+        
+        public void Awake()
+        {
+            _text = transform.Find("VisibleText").GetComponent<TextMeshPro>(); // Find("VisibleText
+            _material = GetComponent<Renderer>().material; // get the material of the tile
         }
     }
 }
