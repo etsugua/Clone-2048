@@ -53,36 +53,36 @@ namespace Specific.Gameplay
             await Task.Delay(1000);
         }
 
-        private void MovePiecesUp()
+        private void MovePiecesUp() // this is the code for moving the pieces up
         {
-            for (int x = 0; x < board.GetLength(0); x++)
+            for (int x = 0; x < board.GetLength(0); x++) // this is the code for moving the pieces up
             {
-                for (int y = board.GetLength(1) - 1; y >= 0; y--)
+                for (int y = board.GetLength(1) - 1; y >= 0; y--) // this is the code for moving the pieces up
                 {
                     // if the tile is not empty
-                    if (board[x, y].GetComponent<Tile>().Value != 0)
+                    if (board[x, y].GetComponent<Tile>().Value != 0) // this is the code for moving the pieces up
                     {
                         // loop through the tiles below it
-                        for (int i = y - 1; i >= 0; i--)
+                        for (int i = y - 1; i >= 0; i--) // this is the code for moving the pieces up
                         {
                             // if the tile is empty, move the piece down
-                            if (board[x, i].GetComponent<Tile>().Value == 0)
+                            if (board[x, i].GetComponent<Tile>().Value == 0) // this is the code for moving the pieces up
                             {
-                                board[x, i].GetComponent<Tile>().Value = board[x, y].GetComponent<Tile>().Value;
-                                board[x, y].GetComponent<Tile>().Value = 0;
+                                board[x, i].GetComponent<Tile>().Value = board[x, y].GetComponent<Tile>().Value; // this is the code for moving the pieces up
+                                board[x, y].GetComponent<Tile>().Value = 0; // this is the code for moving the pieces up
                             }
                             // if the tile is not empty, check if the value is the same
-                            else if (board[x, i].GetComponent<Tile>().Value == board[x, y].GetComponent<Tile>().Value)
+                            else if (board[x, i].GetComponent<Tile>().Value == board[x, y].GetComponent<Tile>().Value) // this is the code for moving the pieces up
                             {
                                 // if the value is the same, merge the pieces
-                                board[x, i].GetComponent<Tile>().Value *= 2;
-                                board[x, y].GetComponent<Tile>().Value = 0;
-                                break;
+                                board[x, i].GetComponent<Tile>().Value *= 2; // this is the code for moving the pieces up
+                                board[x, y].GetComponent<Tile>().Value = 0; // this is the code for moving the pieces up
+                                break; // this is the code for moving the pieces up
                             }
                             // if the tile is not empty and the value is not the same, stop moving the piece
-                            else
+                            else // this is the code for moving the pieces up
                             {
-                                break;
+                                break; // this is the code for moving the pieces up
                             }
                         }
                     }
