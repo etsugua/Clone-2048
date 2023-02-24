@@ -21,13 +21,14 @@ namespace Specific.Gameplay
             {
                 for (int y = 0; y < size; y++)
                 {
-                    var tile = Instantiate(tilePrefab, new Vector2(startX + (increment * x), startY - (increment * y)),
+                    var tileObject = Instantiate(tilePrefab, new Vector2(startX + (increment * x), startY - (increment * y)),
                         Quaternion.identity);
-                    tile.GetComponent<Tile>().Value = 0;
-                    board[x, y] = tile;
+                    var tileScript = tileObject.GetComponent<Tile>();
+                    tileScript.Value = 0;
+                    board[x, y] = tileObject;
                 }
             }
-
+            
             GenerateNewTile();
             GenerateNewTile();
         }
@@ -37,173 +38,179 @@ namespace Specific.Gameplay
             switch (direction)
             {
                 case Direction.Up:
-                    MovePiecesUp();
+                    SwipeUp();
                     break;
                 case Direction.Down:
-                    MovePiecesDown();
+                    SwipeDown();
                     break;
                 case Direction.Left:
-                    MovePiecesLeft();
+                    SwipeLeft();
                     break;
                 case Direction.Right:
-                    MovePiecesRight();
+                    SwipeRight();
                     break;
             }
 
+            ResetWasMerged();
             await Task.Delay(1000);
         }
+        
+        private Tile GetTile(int x, int y)
+        {
+            return board[x, y].GetComponent<Tile>();
+        }
 
-        private void MovePiecesUp()
+        private void SwipeUp()
         {
-            for (int x = 0; x < board.GetLength(0); x++)
+            for (var x = 0; x < board.GetLength(0); x++)
             {
-                for (int y = board.GetLength(1) - 1; y >= 0; y--)
+                for (var y = 0; y < board.GetLength(1) - 1; y++)
                 {
-                    // if the tile is not empty
-                    if (board[x, y].GetComponent<Tile>().Value != 0)
+                    Tile currentTile = GetTile(x, y);
+
+                    for (var y2 = y + 1; y2 < board.GetLength(1); y2++)
                     {
-                        // loop through the tiles below it
-                        for (int i = y - 1; i >= 0; i--)
+                        var checkTile = GetTile(x, y2);
+                        
+                        if (checkTile.IsEmpty)
                         {
-                            // if the tile is empty, move the piece down
-                            if (board[x, i].GetComponent<Tile>().Value == 0)
-                            {
-                                board[x, i].GetComponent<Tile>().Value = board[x, y].GetComponent<Tile>().Value;
-                                board[x, y].GetComponent<Tile>().Value = 0;
-                            }
-                            // if the tile is not empty, check if the value is the same
-                            else if (board[x, i].GetComponent<Tile>().Value == board[x, y].GetComponent<Tile>().Value)
-                            {
-                                // if the value is the same, merge the pieces
-                                board[x, i].GetComponent<Tile>().Value *= 2;
-                                board[x, y].GetComponent<Tile>().Value = 0;
-                                break;
-                            }
-                            // if the tile is not empty and the value is not the same, stop moving the piece
-                            else
-                            {
-                                break;
-                            }
+                            continue;
                         }
+                        
+                        if (currentTile.IsEmpty) 
+                        {
+                            currentTile.Value = checkTile.Value;
+                            checkTile.Value = 0;
+                            y--; // check the same tile again
+                        }
+                        else if (currentTile.Value == checkTile.Value && !currentTile.WasMerged)
+                        {
+                            currentTile.Value *= 2;
+                            currentTile.WasMerged = true;
+                            checkTile.Value = 0;
+                        }
+
+                        break;
+                    }
+                }
+            }
+        }
+
+        private void SwipeDown()
+        {
+            for (var x = 0; x < board.GetLength(0); x++)
+            {
+                for (var y = board.GetLength(1) - 1; y > 0; y--)
+                {
+                    Tile currentTile = GetTile(x, y);
+
+                    for (var y2 = y - 1; y2 >= 0; y2--)
+                    {
+                        var checkTile = GetTile(x, y2);
+                        
+                        if (checkTile.IsEmpty)
+                        {
+                            continue;
+                        }
+                        
+                        if (currentTile.IsEmpty) 
+                        {
+                            currentTile.Value = checkTile.Value;
+                            checkTile.Value = 0;
+                            y++; // check the same tile again
+                        }
+                        else if (currentTile.Value == checkTile.Value && !currentTile.WasMerged)
+                        {
+                            currentTile.Value *= 2;
+                            currentTile.WasMerged = true;
+                            checkTile.Value = 0;
+                        }
+
+                        break;
                     }
                 }
             }
         }
         
-        private void MovePiecesDown()
+        private void SwipeLeft()
         {
-            for (int x = 0; x < board.GetLength(0); x++)
+            for (var y = 0; y < board.GetLength(1); y++)
             {
-                for (int y = 0; y < board.GetLength(1); y++)
+                for (var x = 0; x < board.GetLength(0) - 1; x++)
                 {
-                    // if the tile is not empty
-                    if (board[x, y].GetComponent<Tile>().Value != 0)
+                    Tile currentTile = GetTile(x, y);
+
+                    for (var x2 = x + 1; x2 < board.GetLength(0); x2++)
                     {
-                        // loop through the tiles above it
-                        for (int i = y + 1; i < board.GetLength(1); i++)
+                        var checkTile = GetTile(x2, y);
+                        
+                        if (checkTile.IsEmpty)
                         {
-                            // if the tile is empty, move the piece up
-                            if (board[x, i].GetComponent<Tile>().Value == 0)
-                            {
-                                board[x, i].GetComponent<Tile>().Value = board[x, y].GetComponent<Tile>().Value;
-                                board[x, y].GetComponent<Tile>().Value = 0;
-                            }
-                            // if the tile is not empty, check if the value is the same
-                            else if (board[x, i].GetComponent<Tile>().Value == board[x, y].GetComponent<Tile>().Value)
-                            {
-                                // if the value is the same, merge the pieces
-                                board[x, i].GetComponent<Tile>().Value *= 2;
-                                board[x, y].GetComponent<Tile>().Value = 0;
-                                break;
-                            }
-                            // if the tile is not empty and the value is not the same, stop moving the piece
-                            else
-                            {
-                                break;
-                            }
+                            continue;
                         }
+                        
+                        if (currentTile.IsEmpty) 
+                        {
+                            currentTile.Value = checkTile.Value;
+                            checkTile.Value = 0;
+                            x--; // check the same tile again
+                        }
+                        else if (currentTile.Value == checkTile.Value && !currentTile.WasMerged)
+                        {
+                            currentTile.Value *= 2;
+                            currentTile.WasMerged = true;
+                            checkTile.Value = 0;
+                        }
+
+                        break;// this would mean we found a different tile, so we can stop checking
                     }
                 }
             }
         }
         
-        private void MovePiecesLeft()
+        private void SwipeRight()
         {
-            // pieces should move to the left of the board, until hitting a piece or a wall
-            // if the piece hits a piece with the same value, merge the pieces
-            for (int x = 0; x < board.GetLength(0); x++)
+            for (var y = 0; y < board.GetLength(1); y++)
             {
-                // loop through the board from top to bottom
-                for (int y = 0; y < board.GetLength(1); y++)
+                for (var x = board.GetLength(0) - 1; x >= 1; x--)
                 {
-                    // if the tile is not empty
-                    if (board[x, y].GetComponent<Tile>().Value != 0)
+                    Tile currentTile = GetTile(x, y);
+
+                    for (var x2 = x - 1; x2 >= 0; x2--)
                     {
-                        // loop through the tiles to the left of it
-                        for (int i = x - 1; i >= 0; i--)
+                        var checkTile = GetTile(x2, y);
+                        
+                        if (checkTile.IsEmpty)
                         {
-                            // if the tile is empty, move the piece left
-                            if (board[i, y].GetComponent<Tile>().Value == 0)
-                            {
-                                board[i, y].GetComponent<Tile>().Value = board[x, y].GetComponent<Tile>().Value;
-                                board[x, y].GetComponent<Tile>().Value = 0;
-                            }
-                            // if the tile is not empty, check if the value is the same
-                            else if (board[i, y].GetComponent<Tile>().Value == board[x, y].GetComponent<Tile>().Value)
-                            {
-                                // if the value is the same, merge the pieces
-                                board[i, y].GetComponent<Tile>().Value *= 2;
-                                board[x, y].GetComponent<Tile>().Value = 0;
-                                break;
-                            }
-                            // if the tile is not empty and the value is not the same, stop moving the piece
-                            else
-                            {
-                                break;
-                            }
+                            continue;
                         }
+                        
+                        if (currentTile.IsEmpty) 
+                        {
+                            currentTile.Value = checkTile.Value;
+                            checkTile.Value = 0;
+                            x++; // check the same tile again
+                        }
+                        else if (currentTile.Value == checkTile.Value && !currentTile.WasMerged)
+                        {
+                            currentTile.Value *= 2;
+                            currentTile.WasMerged = true;
+                            checkTile.Value = 0;
+                        }
+
+                        break;// this would mean we found a different tile, so we can stop checking
                     }
                 }
             }
         }
         
-        private void MovePiecesRight()
+        private void ResetWasMerged()
         {
-            // pieces move to the right of the board, until hitting a piece or a wall
-            // if the piece hits a piece with the same value, merge the pieces
-            
-            for (int x = board.GetLength(0) - 1; x >= 0; x--)
+            for (int x = 0; x < board.GetLength(0); x++)
             {
-                // loop through the board from top to bottom
                 for (int y = 0; y < board.GetLength(1); y++)
                 {
-                    // if the tile is not empty
-                    if (board[x, y].GetComponent<Tile>().Value != 0)
-                    {
-                        // loop through the tiles to the right of it
-                        for (int i = x + 1; i < board.GetLength(0); i++)
-                        {
-                            // if the tile is empty, move the piece right
-                            if (board[i, y].GetComponent<Tile>().Value == 0)
-                            {
-                                board[i, y].GetComponent<Tile>().Value = board[x, y].GetComponent<Tile>().Value;
-                                board[x, y].GetComponent<Tile>().Value = 0;
-                            }
-                            // if the tile is not empty, check if the value is the same
-                            else if (board[i, y].GetComponent<Tile>().Value == board[x, y].GetComponent<Tile>().Value)
-                            {
-                                // if the value is the same, merge the pieces
-                                board[i, y].GetComponent<Tile>().Value *= 2;
-                                board[x, y].GetComponent<Tile>().Value = 0;
-                                break;
-                            }
-                            // if the tile is not empty and the value is not the same, stop moving the piece
-                            else
-                            {
-                                break;
-                            }
-                        }
-                    }
+                    board[x, y].GetComponent<Tile>().WasMerged = false;
                 }
             }
         }
@@ -219,7 +226,7 @@ namespace Specific.Gameplay
             }
             else
             {
-                Debug.LogError("GAME OVER! No empty tiles left!");
+                Debug.LogWarning("GAME OVER! No empty tiles left!");
                 return false;
             }
         }

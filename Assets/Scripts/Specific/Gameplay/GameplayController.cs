@@ -44,25 +44,25 @@ namespace Specific.Gameplay
             {
                 GameState = GameState.Matching;
                 _board.PushTowardsDirection(Direction.Right);
-                GameState = GameState.Playing;
+                GameState = GameState.Generating;
             }
             else if (Input.GetKeyDown(KeyCode.LeftArrow)) 
             {
                 GameState = GameState.Matching;
                 _board.PushTowardsDirection(Direction.Left);
-                GameState = GameState.Playing;
+                GameState = GameState.Generating;
             }
             else if (Input.GetKeyDown(KeyCode.UpArrow)) 
             {
                 GameState = GameState.Matching;
                 _board.PushTowardsDirection(Direction.Up);
-                GameState = GameState.Playing;
+                GameState = GameState.Generating;
             }
             else if (Input.GetKeyDown(KeyCode.DownArrow)) 
             {
                 GameState = GameState.Matching;
                 _board.PushTowardsDirection(Direction.Down);
-                GameState = GameState.Playing;
+                GameState = GameState.Generating;
             }
             
         }
