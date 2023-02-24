@@ -1,13 +1,17 @@
 ﻿using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Specific.Gameplay
 {
     public class Tile : MonoBehaviour
     {
         private int _value; // the number of the tile
+
         private TextMeshPro _text; // the text of the tile
         private Material _material; // the material of the tile
+        
+        public bool WasMerged; // whether the tile was merged this move or not
         
         public int Value
         {
@@ -20,6 +24,8 @@ namespace Specific.Gameplay
                 _material.color = TileColors.GetColor(_value);
             }
         }
+        
+        public bool IsEmpty => _value == 0;
         
         public void Awake()
         {

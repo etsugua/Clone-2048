@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 namespace Specific.Gameplay
 {
@@ -40,26 +40,29 @@ namespace Specific.Gameplay
                 return;
             }
 
-            // check if the player has moved a piece
             if (Input.GetKeyDown(KeyCode.RightArrow)) 
             {
                 GameState = GameState.Matching;
                 _board.PushTowardsDirection(Direction.Right);
+                GameState = GameState.Generating;
             }
             else if (Input.GetKeyDown(KeyCode.LeftArrow)) 
             {
                 GameState = GameState.Matching;
                 _board.PushTowardsDirection(Direction.Left);
+                GameState = GameState.Generating;
             }
             else if (Input.GetKeyDown(KeyCode.UpArrow)) 
             {
                 GameState = GameState.Matching;
                 _board.PushTowardsDirection(Direction.Up);
+                GameState = GameState.Generating;
             }
             else if (Input.GetKeyDown(KeyCode.DownArrow)) 
             {
                 GameState = GameState.Matching;
                 _board.PushTowardsDirection(Direction.Down);
+                GameState = GameState.Generating;
             }
             
         }
